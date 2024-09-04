@@ -5,6 +5,8 @@ import com.github.garamflow.flowblog.repository.BlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class BlogService {
@@ -13,5 +15,9 @@ public class BlogService {
 
     public Article save(Article article) {
         return blogRepository.save(article);
+    }
+
+    public List<Article> findAll() {
+        return blogRepository.findAll();
     }
 }

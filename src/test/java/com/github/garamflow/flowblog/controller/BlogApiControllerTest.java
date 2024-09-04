@@ -19,7 +19,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
@@ -84,5 +86,42 @@ class BlogApiControllerTest {
                 .isEqualTo(updatedAt.truncatedTo(ChronoUnit.MINUTES));
         assertThat(articles.get(0).getTags().size()).isEqualTo(tags.size());
         assertThat(articles.get(0).getCategoryName()).isEqualTo(categoryName);
+    }
+
+    @DisplayName("getAllArticles: 블로그 글 목록 조회에 성공한다.")
+    @Test
+    void getAllArticles() throws Exception {
+        final String url = "/api/articles";
+        final String title = "타이틀";
+        final String content = "내용";
+        final String author = "저자";
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final LocalDateTime updatedAt = LocalDateTime.now();
+        final List<String> tags = List.of("Java", "Spring");
+        final String categoryName = "카테고리";
+
+        blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .author(author)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .tags(tags)
+                .categoryName(categoryName)
+                .build());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(get(url).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].content").value(content))
+                .andExpect(jsonPath("$[0].title").value(title))
+                .andExpect(jsonPath("$[0].author").value(author))
+                .andExpect(jsonPath("$[0].categoryName").value(categoryName))
+                .andExpect(jsonPath("$[0].tags[0]").value("Java"))
+                .andExpect(jsonPath("$[0].tags[1]").value("Spring"))
+                .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$[0].updatedAt").isNotEmpty());
     }
 }
