@@ -124,4 +124,43 @@ class BlogApiControllerTest {
                 .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
                 .andExpect(jsonPath("$[0].updatedAt").isNotEmpty());
     }
+
+    @DisplayName("findArticle: 블로그 글 하나 조회에 성공한다.")
+    @Test
+    public void findArticle() throws Exception {
+        //given
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+        final String author = "저자";
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final LocalDateTime updatedAt = LocalDateTime.now();
+        final List<String> tags = List.of("Java", "Spring");
+        final String categoryName = "카테고리";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .author(author)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .tags(tags)
+                .categoryName(categoryName)
+                .build());
+
+        //when
+        final ResultActions resultActions = mockMvc.perform(get(url, savedArticle.getId()));
+
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value(content))
+                .andExpect(jsonPath("$.title").value(title))
+                .andExpect(jsonPath("$.author").value(author))
+                .andExpect(jsonPath("$.categoryName").value(categoryName))
+                .andExpect(jsonPath("$.tags[0]").value("Java"))
+                .andExpect(jsonPath("$.tags[1]").value("Spring"))
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.updatedAt").isNotEmpty());
+    }
 }
