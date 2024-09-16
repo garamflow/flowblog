@@ -61,4 +61,12 @@ public class Article {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void update(String title, String content, String author, LocalDateTime updatedAt, String categoryName) {
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
+        this.categoryName = categoryName;
+    }
 }

@@ -2,6 +2,7 @@ package com.github.garamflow.flowblog.controller;
 
 import com.github.garamflow.flowblog.domain.Article;
 import com.github.garamflow.flowblog.dto.ArticleResponse;
+import com.github.garamflow.flowblog.dto.UpdateArticleRequest;
 import com.github.garamflow.flowblog.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,5 +35,19 @@ public class BlogApiController {
     public ResponseEntity<ArticleResponse> getArticle(@PathVariable Long id) {
         Article article = blogService.findById(id);
         return ResponseEntity.ok().body(new ArticleResponse(article));
+    }
+
+    @DeleteMapping("/api/articles/{id}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
+        blogService.delete(id);
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    @PutMapping("/api/article/{id}")
+    public ResponseEntity<Article> updateArticle(@PathVariable Long id, @RequestBody UpdateArticleRequest request) {
+        Article article = blogService.update(id, request);
+
+        return ResponseEntity.ok().body(article);
     }
 }

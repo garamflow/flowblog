@@ -3,6 +3,7 @@ package com.github.garamflow.flowblog.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.garamflow.flowblog.domain.Article;
 import com.github.garamflow.flowblog.dto.AddArticleRequest;
+import com.github.garamflow.flowblog.dto.UpdateArticleRequest;
 import com.github.garamflow.flowblog.repository.BlogRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -162,5 +162,81 @@ class BlogApiControllerTest {
                 .andExpect(jsonPath("$.tags[1]").value("Spring"))
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.updatedAt").isNotEmpty());
+    }
+
+    @DisplayName("deleteArticle: 블로그 글 하나 삭제에 성공한다.")
+    @Test
+    public void deleteArticle() throws Exception {
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+        final String author = "저자";
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final LocalDateTime updatedAt = LocalDateTime.now();
+        final List<String> tags = List.of("Java", "Spring");
+        final String categoryName = "카테고리";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .author(author)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .tags(tags)
+                .categoryName(categoryName)
+                .build());
+
+        //when
+        mockMvc.perform(delete(url, savedArticle.getId()));
+
+        //then
+        List<Article> articles = blogRepository.findAll();
+        assertThat(articles).isEmpty();
+    }
+
+    @DisplayName("updatedArticle: 블로그 글 수정에 성공한다.")
+    @Test
+    public void updateArticle() throws Exception {
+        // given
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+        final String author = "저자";
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final LocalDateTime updatedAt = LocalDateTime.now();
+        final List<String> tags = List.of("Java", "Spring");
+        final String categoryName = "카테고리";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .author(author)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .tags(tags)
+                .categoryName(categoryName)
+                .build());
+
+        final String newTitle = "newTitle";
+        final String newContent = "newContent";
+        final String newTags = "newTags";
+        final String newCategoryName = "newCategoryName";
+        final LocalDateTime newUpdatedAt = LocalDateTime.now();
+
+        UpdateArticleRequest request = new UpdateArticleRequest(newTitle, newContent, newTags, newUpdatedAt, newCategoryName);
+
+        //when
+        ResultActions result = mockMvc.perform(put(url, savedArticle.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        result.andExpect(status().isOk());
+        Article article = blogRepository.findById(savedArticle.getId()).get();
+
+        assertThat(article.getTitle()).isEqualTo(newTitle);
+        assertThat(article.getContent()).isEqualTo(newContent);
+        assertThat(article.getTags()).isEqualTo(newTags);
+        assertThat(article.getCategoryName()).isEqualTo(newCategoryName);
     }
 }
