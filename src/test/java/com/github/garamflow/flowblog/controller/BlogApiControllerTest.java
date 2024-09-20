@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
@@ -219,7 +220,7 @@ class BlogApiControllerTest {
 
         final String newTitle = "newTitle";
         final String newContent = "newContent";
-        final String newTags = "newTags";
+        final List<String> newTags = Arrays.asList("newTags", "newTags2");
         final String newCategoryName = "newCategoryName";
         final LocalDateTime newUpdatedAt = LocalDateTime.now();
 

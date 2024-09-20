@@ -3,11 +3,12 @@ package com.github.garamflow.flowblog.dto;
 import com.github.garamflow.flowblog.domain.Article;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record UpdateArticleRequest(
         String title,
         String content,
-        String tags,
+        List<String> tags,
         LocalDateTime updatedAt,
         String categoryName
 ) {
