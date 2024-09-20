@@ -25,4 +25,8 @@ public record ArticleViewResponse(
                 article.getCategoryName()
         );
     }
+
+    public static ArticleViewResponse empty() {
+        return new ArticleViewResponse(null, "", "", "", LocalDateTime.now(), List.of(), "");
+    }
 }
