@@ -62,10 +62,10 @@ public class Article {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void update(String title, String content, String author, LocalDateTime updatedAt, String categoryName) {
+    public void update(String title, String content, List<String> tags, LocalDateTime updatedAt, String categoryName) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.tags = tags;
         this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
         this.categoryName = categoryName;
     }
