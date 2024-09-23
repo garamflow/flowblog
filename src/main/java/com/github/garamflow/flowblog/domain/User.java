@@ -5,6 +5,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+@EntityListeners(AuditingEntityListener.class)
 @Table(name="users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -30,7 +34,6 @@ public class User implements UserDetails {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
-
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -38,10 +41,12 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    @Column(name = "createdAt", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder
@@ -50,8 +55,6 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     @Override
@@ -92,7 +95,6 @@ public class User implements UserDetails {
     public void updateUser(String nickname, String email) {
         this.nickname = nickname;
         this.email = email;
-        this.updatedAt = LocalDateTime.now();
     }
 
     public enum UserRole {
