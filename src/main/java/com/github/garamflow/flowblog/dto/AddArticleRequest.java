@@ -8,8 +8,6 @@ public record AddArticleRequest(
         String title,
         String content,
         String author,
-        LocalDateTime createdAt,
-        LocalDateTime updateAt,
         List<String> tags,
         String categoryName
 ) {
@@ -18,8 +16,6 @@ public record AddArticleRequest(
                 .title(title)
                 .content(content)
                 .author(author)
-                .createdAt(createdAt)
-                .updatedAt(updateAt)
                 .tags(tags)
                 .categoryName(categoryName)
                 .build();
