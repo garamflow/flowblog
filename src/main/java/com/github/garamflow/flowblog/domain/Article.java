@@ -28,7 +28,7 @@ public class Article {
     @Column(name="content", nullable = false)
     private String content;
 
-    @Column(name = "author", nullable = false)
+    @Column(name = "author", nullable = true)
     private String author;
 
     @CreatedDate
@@ -43,36 +43,22 @@ public class Article {
     @Column(name = "tags", nullable = true)
     private List<String> tags;
 
-    @Column(name="categoryName", nullable = false)
+    @Column(name="categoryName", nullable = true)
     private String categoryName;
 
     @Builder(toBuilder = true)
-    public Article(String title, String content, String author, LocalDateTime createdAt, LocalDateTime updatedAt, List<String> tags, String categoryName) {
+    public Article(String title, String content, String author, List<String> tags, String categoryName) {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
-        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
         this.tags = tags;
         this.categoryName = categoryName;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void update(String title, String content, List<String> tags, LocalDateTime updatedAt, String categoryName) {
+    public void update(String title, String content, List<String> tags, String categoryName) {
         this.title = title;
         this.content = content;
         this.tags = tags;
-        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
         this.categoryName = categoryName;
     }
 }
