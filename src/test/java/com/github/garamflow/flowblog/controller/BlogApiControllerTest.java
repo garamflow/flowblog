@@ -23,8 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import java.time.temporal.ChronoUnit;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,12 +60,10 @@ class BlogApiControllerTest {
         final String title = "타이틀";
         final String content = "내용";
         final String author = "저자";
-        final LocalDateTime createdAt = LocalDateTime.now();
-        final LocalDateTime updatedAt = LocalDateTime.now();
         final List<String> tags = new ArrayList<>();
         final String categoryName = "카테고리";
 
-        final AddArticleRequest userRequest = new AddArticleRequest(title, content, author, createdAt, updatedAt, tags, categoryName);
+        final AddArticleRequest userRequest = new AddArticleRequest(title, content, author, tags, categoryName);
 
         final String requestBody = objectMapper.writeValueAsString(userRequest);
 
@@ -81,10 +79,8 @@ class BlogApiControllerTest {
         assertThat(articles.get(0).getTitle()).isEqualTo(title);
         assertThat(articles.get(0).getContent()).isEqualTo(content);
         assertThat(articles.get(0).getAuthor()).isEqualTo(author);
-        assertThat(articles.get(0).getCreatedAt().truncatedTo(ChronoUnit.MINUTES))
-                .isEqualTo(createdAt.truncatedTo(ChronoUnit.MINUTES));
-        assertThat(articles.get(0).getUpdatedAt().truncatedTo(ChronoUnit.MINUTES))
-                .isEqualTo(updatedAt.truncatedTo(ChronoUnit.MINUTES));
+        assertThat(articles.get(0).getCreatedAt()).isNotNull();
+        assertThat(articles.get(0).getUpdatedAt()).isNotNull();
         assertThat(articles.get(0).getTags().size()).isEqualTo(tags.size());
         assertThat(articles.get(0).getCategoryName()).isEqualTo(categoryName);
     }
@@ -96,8 +92,6 @@ class BlogApiControllerTest {
         final String title = "타이틀";
         final String content = "내용";
         final String author = "저자";
-        final LocalDateTime createdAt = LocalDateTime.now();
-        final LocalDateTime updatedAt = LocalDateTime.now();
         final List<String> tags = List.of("Java", "Spring");
         final String categoryName = "카테고리";
 
@@ -105,8 +99,6 @@ class BlogApiControllerTest {
                 .title(title)
                 .content(content)
                 .author(author)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
                 .tags(tags)
                 .categoryName(categoryName)
                 .build());
@@ -143,8 +135,6 @@ class BlogApiControllerTest {
                 .title(title)
                 .content(content)
                 .author(author)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
                 .tags(tags)
                 .categoryName(categoryName)
                 .build());
@@ -181,8 +171,6 @@ class BlogApiControllerTest {
                 .title(title)
                 .content(content)
                 .author(author)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
                 .tags(tags)
                 .categoryName(categoryName)
                 .build());
@@ -197,14 +185,13 @@ class BlogApiControllerTest {
 
     @DisplayName("updatedArticle: 블로그 글 수정에 성공한다.")
     @Test
+    @Transactional
     public void updateArticle() throws Exception {
         // given
         final String url = "/api/articles/{id}";
         final String title = "title";
         final String content = "content";
         final String author = "저자";
-        final LocalDateTime createdAt = LocalDateTime.now();
-        final LocalDateTime updatedAt = LocalDateTime.now();
         final List<String> tags = List.of("Java", "Spring");
         final String categoryName = "카테고리";
 
@@ -212,8 +199,6 @@ class BlogApiControllerTest {
                 .title(title)
                 .content(content)
                 .author(author)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
                 .tags(tags)
                 .categoryName(categoryName)
                 .build());
@@ -222,9 +207,8 @@ class BlogApiControllerTest {
         final String newContent = "newContent";
         final List<String> newTags = Arrays.asList("newTags", "newTags2");
         final String newCategoryName = "newCategoryName";
-        final LocalDateTime newUpdatedAt = LocalDateTime.now();
 
-        UpdateArticleRequest request = new UpdateArticleRequest(newTitle, newContent, newTags, newUpdatedAt, newCategoryName);
+        UpdateArticleRequest request = new UpdateArticleRequest(newTitle, newContent, newTags, newCategoryName);
 
         //when
         ResultActions result = mockMvc.perform(put(url, savedArticle.getId())
@@ -239,5 +223,6 @@ class BlogApiControllerTest {
         assertThat(article.getContent()).isEqualTo(newContent);
         assertThat(article.getTags()).isEqualTo(newTags);
         assertThat(article.getCategoryName()).isEqualTo(newCategoryName);
+        assertThat(article.getUpdatedAt()).isAfterOrEqualTo(article.getCreatedAt());
     }
 }

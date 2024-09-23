@@ -35,7 +35,7 @@ public class BlogService {
     @Transactional
     public Article update(Long id, UpdateArticleRequest request) {
         Article article = blogRepository.findById(id).orElseThrow(() -> new NoSuchElementException("not found" + id));
-        article.update(request.title(), request.content(), request.tags(), request.updatedAt(), request.categoryName());
+        article.update(request.title(), request.content(), request.tags(), request.categoryName());
 
         return article;
     }
