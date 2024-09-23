@@ -26,7 +26,7 @@ public class BlogViewController {
                 .toList();
         model.addAttribute("articles", articles);
 
-        return "articles.html";
+        return "articleList";
     }
 
     @GetMapping("/articles/{id}")
@@ -34,7 +34,7 @@ public class BlogViewController {
         Article article = blogService.findById(id);
         model.addAttribute("article", new ArticleViewResponse(article));
 
-        return "article.html";
+        return "article";
     }
 
     @GetMapping("/new-article")
@@ -46,6 +46,6 @@ public class BlogViewController {
             model.addAttribute("article", new ArticleViewResponse(article));
         }
 
-        return "newArticle.html";
+        return "newArticle";
     }
 }
